@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrapping Video Interaction Generation with Synthetic State Transitions</title>
+    <style>
+        :root {
+            --ink: #17212b;
+            --muted: #5c6a76;
+            --line: #d9e1e8;
+            --soft: #f5f8fa;
+            --paper: #ffffff;
+            --blue: #1769aa;
+            --blue-dark: #0e4f82;
+            --green: #2d7d62;
+            --gold: #b57822;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--paper);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 24px 72px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 56px 0 34px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .eyebrow {
+            color: var(--green);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin: 0 0 14px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: 3.3rem;
+            line-height: 1.08;
+            margin: 0 auto 18px;
+            max-width: 980px;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 1.65rem;
+            text-align: center;
+            margin-top: 62px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 10px;
+            font-weight: 650;
+        }
+
+        p,
+        li {
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .authors {
+            color: var(--muted);
+            font-size: 1.08rem;
+            margin: 0 auto 22px;
+            text-align: center;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 22px 0 12px;
+        }
+
+        .button {
+            align-items: center;
+            background: var(--blue);
+            border: 1px solid var(--blue);
+            border-radius: 8px;
+            color: #fff;
+            display: inline-flex;
+            font-weight: 700;
+            justify-content: center;
+            min-height: 42px;
+            min-width: 132px;
+            padding: 9px 16px;
+        }
+
+        .button:hover {
+            background: var(--blue-dark);
+            border-color: var(--blue-dark);
+            text-decoration: none;
+        }
+
+        .button.secondary {
+            background: #fff;
+            color: var(--blue);
+        }
+
+        .button.secondary:hover {
+            background: var(--soft);
+            color: var(--blue-dark);
+        }
+
+        .button.disabled {
+            background: #eef2f5;
+            border-color: #eef2f5;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        .status-note {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin: 10px auto 0;
+            max-width: 620px;
+            text-align: center;
+        }
+
+        .abstract {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .callout {
+            background: #f7fbf8;
+            border-left: 4px solid var(--green);
+            color: #26433a;
+            margin: 20px auto 0;
+            max-width: 860px;
+            padding: 12px 16px;
+        }
+
+        video,
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background-color: var(--soft);
+        }
+
+        .pipeline-figure {
+            margin-top: 18px;
+        }
+
+        .caption {
+            color: var(--muted);
+            font-size: 0.92rem;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .grid-3-col {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .grid-4-col {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .grid-item {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .grid-item video {
+            border: 0;
+            border-radius: 6px;
+            margin-top: 0;
+            width: 100%;
+        }
+
+        .grid-item p {
+            color: var(--ink);
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 4px 0 8px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            min-height: 44px;
+        }
+
+        .navigation button {
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-width: 120px;
+            transition: background-color 0.2s;
+        }
+
+        .navigation button:hover {
+            background-color: var(--blue-dark);
+        }
+
+        .navigation span {
+            color: var(--muted);
+            font-weight: bold;
+            font-size: 0.95rem;
+            min-width: 112px;
+            text-align: center;
+        }
+
+        .prompt-display {
+            text-align: center;
+            font-style: italic;
+            color: var(--muted);
+            margin-bottom: 20px;
+            min-height: 40px;
+        }
+
+        .release {
+            align-items: center;
+            border-top: 1px solid var(--line);
+            display: flex;
+            gap: 18px;
+            justify-content: space-between;
+            margin-top: 58px;
+            padding-top: 24px;
+        }
+
+        .release p {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        pre {
+            background: #101820;
+            border-radius: 8px;
+            color: #ecf2f8;
+            line-height: 1.5;
+            margin: 18px auto 0;
+            max-width: 860px;
+            overflow-x: auto;
+            padding: 18px;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-size: 0.92rem;
+        }
+
+        footer {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 56px;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .grid-4-col {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .grid-3-col {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 16px 48px;
+            }
+
+            .hero {
+                padding: 38px 0 28px;
+            }
+
+            h1 {
+                font-size: 2.05rem;
+            }
+
+            h2 {
+                font-size: 1.35rem;
+                margin-top: 46px;
+            }
+
+            .actions,
+            .navigation,
+            .release {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .button,
+            .navigation button {
+                width: 100%;
+            }
+
+            .navigation span {
+                min-width: 0;
+            }
+
+            .grid-4-col,
+            .grid-3-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="hero">
+            <p class="eyebrow">Project Page</p>
+            <h1>Bootstrapping Video Interaction Generation with Synthetic State Transitions</h1>
+            <!-- TODO: Replace with the final camera-ready author list and affiliation links. -->
+            <p class="authors">Author information will be updated with the camera-ready version.</p>
+            <div class="actions" aria-label="Project links">
+                <a class="button" href="./supp_comp.pdf">Supplementary PDF</a>
+                <a class="button secondary" href="https://github.com/hagiss/synthetic-state-transitions">Code</a>
+                <a class="button secondary" href="#qualitative-comparison">Videos</a>
+                <span class="button disabled" aria-disabled="true">Paper Coming Soon</span>
+            </div>
+            <p class="status-note">The code will be released on this page.</p>
+        </header>
+
+        <section class="abstract" id="abstract">
+            <h2>Abstract</h2>
+            <p>
+                Current video generative models struggle to portray plausible physical interactions, limiting their use
+                in robotics and VR/AR. To address this, we introduce a framework to generate a scalable synthetic
+                dataset of controllable interactions. Our pipeline leverages a structured taxonomy and state-of-the-art
+                image editing models to create explicit start and end state images, which serve as visual anchors for
+                the interaction. To generate a seamless video between these anchors, we propose State-Guided Sampling
+                (SGS), a sampling technique that mitigates artifacts common in naive conditional generation. We also
+                develop and validate an automated evaluation system aligned with human judgments to ensure data quality.
+                Experiments show that fine-tuning a base model on our dataset significantly enhances its ability to
+                generate plausible interactions. The dataset, code, and evaluation tools will be released.
+            </p>
+        </section>
+
+        <section id="overview">
+            <h2>Pipeline Overview</h2>
+            <img class="pipeline-figure" src="./main.jpeg" alt="Overview of the synthetic state transition pipeline">
+            <p class="caption">
+                Our framework consists of three stages: (1) Taxonomy-guided prompt and image anchor generation, (2)
+                video generation with State-Guided Sampling (SGS), and (3) an automated evaluation system
+                to filter for high-quality data.
+            </p>
+        </section>
+
+        <section id="qualitative-comparison">
+            <h2>Qualitative Comparison</h2>
+            <p class="callout">
+                Videos are compressed for web delivery. Use the controls below to browse representative comparisons
+                across interaction prompts.
+            </p>
+            <div id="qualitative-carousel-container">
+                <p id="qualitative-prompt-display" class="prompt-display"></p>
+                <div id="qualitative-grid-container">
+                </div>
+                <div class="navigation">
+                    <button id="qualitative-prev-btn" type="button">&lt; Previous</button>
+                    <span id="qualitative-example-counter"></span>
+                    <button id="qualitative-next-btn" type="button">Next &gt;</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="sgs">
+            <h2>State-Guided Sampling (SGS)</h2>
+            <div id="sgs-carousel-container">
+                <p id="sgs-prompt-display" class="prompt-display"></p>
+                <div class="comparison-grid grid-3-col" id="sgs-grid-container">
+                </div>
+                <div class="navigation">
+                    <button id="sgs-prev-btn" type="button">&lt; Previous</button>
+                    <span id="sgs-example-counter"></span>
+                    <button id="sgs-next-btn" type="button">Next &gt;</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="citation">
+            <h2>Citation</h2>
+            <p class="caption">Citation metadata will be updated when the final camera-ready version is available.</p>
+            <pre><code>@inproceedings{synthetic-state-transitions,
+  title = {Bootstrapping Video Interaction Generation with Synthetic State Transitions},
+  author = {TBD},
+  booktitle = {TBD},
+  year = {2026}
+}</code></pre>
+        </section>
+
+        <section class="release" id="release">
+            <p>
+                Supplementary material is available now. Code, dataset details, and evaluation tools will be released
+                here.
+            </p>
+            <a class="button secondary" href="./supp_comp.pdf">Open Supplement</a>
+        </section>
+
+        <footer>
+            Project page for Bootstrapping Video Interaction Generation with Synthetic State Transitions.
+        </footer>
+    </div>
+
+    <!-- =============================================================================== -->
+    <!-- JAVASCRIPT for BOTH interactive carousels -->
+    <!-- =============================================================================== -->
+    <script>
+        // --- Data for the QUALITATIVE COMPARISON interactive examples ---
+        // TODO: Add more examples here by following the same structure.
+        const qualitative_examples = [
+            {
+                prompt: "A person picks up the yellow sponge and thoroughly scrubs the kitchen counter, removing the layer of grime to reveal a spotless, gleaming surface.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/sink.mp4",
+                    "Hunyuan": "./baselines/hunyuan/sink.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/sink.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/sink.mp4",
+                    "SGS (Ours)": "./baselines/sgs/sink.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/sink.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/sink.mp4"
+                }
+            },
+            {
+                prompt: "A miner uses a pickaxe to break through the rock wall in an underground tunnel, creating a cavity and scattering debris on the ground.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/mine.mp4",
+                    "Hunyuan": "./baselines/hunyuan/mine.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/mine.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/mine.mp4",
+                    "SGS (Ours)": "./baselines/sgs/mine.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/mine.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/mine.mp4"
+                }
+            },
+            {
+                prompt: "A child presses their finger firmly into the yellow modeling clay on the table, creating a clear indentation in its surface.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/yellow.mp4",
+                    "Hunyuan": "./baselines/hunyuan/yellow.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/yellow.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/yellow.mp4",
+                    "SGS (Ours)": "./baselines/sgs/yellow.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/yellow.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/yellow.mp4"
+                }
+            },
+            {
+                prompt: "The nightingale hops onto the coffee table and pecks at the cherry, puncturing its skin and partially eating the fruit, leaving small pieces scattered around.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/bird.mp4",
+                    "Hunyuan": "./baselines/hunyuan/bird.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/bird.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/bird.mp4",
+                    "SGS (Ours)": "./baselines/sgs/bird.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/bird.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/bird.mp4"
+                }
+            },
+            {
+                prompt: "A person wearing gloves picks up the spray paint can and carefully sprays a vibrant, glossy coat over the daffodil's petals and stem, transforming its appearance in the evening garden.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/spray.mp4",
+                    "Hunyuan": "./baselines/hunyuan/spray.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/spray.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/spray.mp4",
+                    "SGS (Ours)": "./baselines/sgs/spray.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/spray.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/spray.mp4"
+                }
+            },
+            {
+                prompt: "The coffee pot tilts in midair and pours a swirling stream of steaming coffee into the vibrant mug, magically filling it to the brim in the sunlit office break room.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/coffee.mp4",
+                    "Hunyuan": "./baselines/hunyuan/coffee.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/coffee.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/coffee.mp4",
+                    "SGS (Ours)": "./baselines/sgs/coffee.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/coffee.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/coffee.mp4"
+                }
+            },
+            {
+                prompt: "With a burst of energy, the skateboarder launches off the ramp, soaring upward as the skateboard spins beneath them in mid-air, both suspended in a dramatic, sunlit leap.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/skate.mp4",
+                    "Hunyuan": "./baselines/hunyuan/skate.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/skate.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/skate.mp4",
+                    "SGS (Ours)": "./baselines/sgs/skate.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/skate.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/skate.mp4"
+                }
+            },
+            {
+                prompt: "The baker skillfully molds the round mound of bread dough into a perfectly shaped loaf on the flour-dusted worktable, sunlight illuminating the transformation in the cozy bakery kitchen.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/dough.mp4",
+                    "Hunyuan": "./baselines/hunyuan/dough.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/dough.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/dough.mp4",
+                    "SGS (Ours)": "./baselines/sgs/dough.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/dough.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/dough.mp4"
+                }
+            },
+            {
+                prompt: "With a fierce swing of his mop, the janitor smashes the electronic keyboard, sending its keys and panels flying apart in a dramatic explosion of fragments.",
+                videos: {
+                    "PhyI2V": "./baselines/phyi2v/piano.mp4",
+                    "Hunyuan": "./baselines/hunyuan/piano.mp4",
+                    "Wan2.1 FLF": "./baselines/flf/piano.mp4",
+                    "Wan2.1 I2V": "./baselines/i2v/piano.mp4",
+                    "SGS (Ours)": "./baselines/sgs/piano.mp4",
+                    "I2V+ (Ours)": "./baselines/i2vp/piano.mp4",
+                    "SGS+ (Ours)": "./baselines/sgsp/piano.mp4"
+                }
+            }
+        ];
+
+        // --- Data for the SGS interactive examples ---
+        // TODO: Add more SGS examples here by following the same structure.
+        const sgs_examples = [
+            {
+                prompt: "A person in a sunny kitchen pours out a glass of orange juice into the sink, leaving the glass empty and glistening in the light.",
+                videos: {
+                    "FLF": "./sgs/flf/juice.mp4",
+                    "I2V": "./sgs/i2v/juice.mp4",
+                    "SGS (Ours)": "./sgs/sgs/juice.mp4"
+                }
+            },
+            {
+                prompt: "Watch as the person deftly folds the paper in half.",
+                videos: {
+                    "FLF": "./sgs/flf/paper.mp4",
+                    "I2V": "./sgs/i2v/paper.mp4",
+                    "SGS (Ours)": "./sgs/sgs/paper.mp4"
+                }
+            },
+            {
+                prompt: "Watch as the rocket ignites and propels the spacecraft upwards into the atmosphere, leaving the launch pad behind.",
+                videos: {
+                    "FLF": "./sgs/flf/rocket.mp4",
+                    "I2V": "./sgs/i2v/rocket.mp4",
+                    "SGS (Ours)": "./sgs/sgs/rocket.mp4"
+                }
+            },
+            {
+                prompt: "A curious child in a kitchen eagerly takes bites out of a large red apple, reducing it to a half-eaten state with visible teeth marks.",
+                videos: {
+                    "FLF": "./sgs/flf/apple.mp4",
+                    "I2V": "./sgs/i2v/apple.mp4",
+                    "SGS (Ours)": "./sgs/sgs/apple.mp4"
+                }
+            },
+            {
+                prompt: "A baseball hurtles through the air, striking the car door and leaving a noticeable dent in its center.",
+                videos: {
+                    "FLF": "./sgs/flf/baseball.mp4",
+                    "I2V": "./sgs/i2v/baseball.mp4",
+                    "SGS (Ours)": "./sgs/sgs/baseball.mp4"
+                }
+            },
+            {
+                prompt: "On an airport runway, a leopard knocks over a bottle with its paw, sending it rolling across the asphalt.",
+                videos: {
+                    "FLF": "./sgs/flf/bottle.mp4",
+                    "I2V": "./sgs/i2v/bottle.mp4",
+                    "SGS (Ours)": "./sgs/sgs/bottle.mp4"
+                }
+            },
+            {
+                prompt: "Watch as the pink eraser glides across the paper, magically fading the jungle scene and leaving behind a trail of shavings.",
+                videos: {
+                    "FLF": "./sgs/flf/eraser.mp4",
+                    "I2V": "./sgs/i2v/eraser.mp4",
+                    "SGS (Ours)": "./sgs/sgs/eraser.mp4"
+                }
+            },
+            {
+                prompt: "Watch as the colorful scarf dances through the air, weaving itself intricately around the lily's petals and stems against the backdrop of a cascading waterfall.",
+                videos: {
+                    "FLF": "./sgs/flf/scarf.mp4",
+                    "I2V": "./sgs/i2v/scarf.mp4",
+                    "SGS (Ours)": "./sgs/sgs/scarf.mp4"
+                }
+            },
+            {
+                prompt: "Watch as a determined firefighter battles fierce flames with a powerful hose, transforming a burning building into a smoldering, smoke-filled structure.",
+                videos: {
+                    "FLF": "./sgs/flf/fire.mp4",
+                    "I2V": "./sgs/i2v/fire.mp4",
+                    "SGS (Ours)": "./sgs/sgs/fire.mp4"
+                }
+            },
+            {
+                prompt: "A child in a vibrant playground pulls apart a piece of gum, stretching it into a long, thin strand.",
+                videos: {
+                    "FLF": "./sgs/flf/gum.mp4",
+                    "I2V": "./sgs/i2v/gum.mp4",
+                    "SGS (Ours)": "./sgs/sgs/gum.mp4"
+                }
+            },
+            {
+                prompt: "A hand squeezes a stress ball on an office desk, compressing it into an irregular shape before it returns to its original form.",
+                videos: {
+                    "FLF": "./sgs/flf/ball.mp4",
+                    "I2V": "./sgs/i2v/ball.mp4",
+                    "SGS (Ours)": "./sgs/sgs/ball.mp4"
+                }
+            },
+            {
+                prompt: "Watch as the gardener kneels to pull the weed from the soil, leaving a small hole behind.",
+                videos: {
+                    "FLF": "./sgs/flf/grass.mp4",
+                    "I2V": "./sgs/i2v/grass.mp4",
+                    "SGS (Ours)": "./sgs/sgs/grass.mp4"
+                }
+            },
+        ];
+
+        // --- Generic Carousel Setup Function ---
+        function setupCarousel(containerId, examplesData) {
+            let currentIndex = 0;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const promptDisplay = container.querySelector('.prompt-display');
+            const gridContainer = container.querySelector('.comparison-grid') || container.querySelector('#qualitative-grid-container');
+            const counterDisplay = container.querySelector('.navigation span');
+            const prevBtn = container.querySelector('.navigation button:first-child');
+            const nextBtn = container.querySelector('.navigation button:last-child');
+
+            function showExample(index) {
+                const example = examplesData[index];
+                if (promptDisplay) {
+                    promptDisplay.textContent = `Prompt: "${example.prompt}"`;
+                }
+                gridContainer.innerHTML = ''; // Clear previous videos
+
+                if (containerId === 'qualitative-carousel-container') {
+                    const videos = Object.entries(example.videos);
+                    const row1Videos = videos.slice(0, 4);
+                    const row2Videos = videos.slice(4);
+
+                    const row1 = document.createElement('div');
+                    row1.className = 'comparison-grid grid-4-col';
+
+                    for (const [modelName, videoSrc] of row1Videos) {
+                        const gridItem = document.createElement('div');
+                        gridItem.className = 'grid-item';
+                        gridItem.innerHTML = `
+                            <p>${modelName}</p>
+                            <video src="${videoSrc}" autoplay loop muted playsinline onerror="this.style.display='none'"></video>
+                        `;
+                        row1.appendChild(gridItem);
+                    }
+                    gridContainer.appendChild(row1);
+
+                    if (row2Videos.length > 0) {
+                        const row2 = document.createElement('div');
+                        row2.className = 'comparison-grid grid-3-col';
+
+                        for (const [modelName, videoSrc] of row2Videos) {
+                            const gridItem = document.createElement('div');
+                            gridItem.className = 'grid-item';
+                            gridItem.innerHTML = `
+                                <p>${modelName}</p>
+                                <video src="${videoSrc}" autoplay loop muted playsinline onerror="this.style.display='none'"></video>
+                            `;
+                            row2.appendChild(gridItem);
+                        }
+                        gridContainer.appendChild(row2);
+                    }
+                } else {
+                    for (const modelName in example.videos) {
+                        const videoSrc = example.videos[modelName];
+                        const gridItem = document.createElement('div');
+                        gridItem.className = 'grid-item';
+                        gridItem.innerHTML = `
+                            <p>${modelName}</p>
+                            <video src="${videoSrc}" autoplay loop muted playsinline onerror="this.style.display='none'"></video>
+                        `;
+                        gridContainer.appendChild(gridItem);
+                    }
+                }
+
+                if (counterDisplay) {
+                    counterDisplay.textContent = `Example ${index + 1} of ${examplesData.length}`;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + examplesData.length) % examplesData.length;
+                showExample(currentIndex);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % examplesData.length;
+                showExample(currentIndex);
+            });
+
+            if (examplesData.length > 0) {
+                showExample(currentIndex);
+            }
+        }
+
+        // --- Initialize Both Carousels on Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCarousel('qualitative-carousel-container', qualitative_examples);
+            setupCarousel('sgs-carousel-container', sgs_examples);
+        });
+    </script>
+
+</body>
+
+</html>
