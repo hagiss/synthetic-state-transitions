@@ -91,10 +91,19 @@
         }
 
         .authors {
-            color: var(--muted);
-            font-size: 1.08rem;
-            margin: 0 auto 22px;
+            color: var(--ink);
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin: 0 auto 24px;
             text-align: center;
+        }
+
+        .authors sup {
+            font-size: 0.62em;
+            font-weight: 500;
+            line-height: 0;
         }
 
         .actions {
@@ -125,29 +134,12 @@
             text-decoration: none;
         }
 
-        .button.secondary {
-            background: #fff;
-            color: var(--blue);
-        }
-
-        .button.secondary:hover {
-            background: var(--soft);
-            color: var(--blue-dark);
-        }
-
         .button.disabled {
             background: #eef2f5;
             border-color: #eef2f5;
             color: var(--muted);
             cursor: default;
-        }
-
-        .status-note {
-            color: var(--muted);
-            font-size: 0.95rem;
-            margin: 10px auto 0;
-            max-width: 620px;
-            text-align: center;
+            pointer-events: none;
         }
 
         .abstract {
@@ -266,21 +258,6 @@
             min-height: 40px;
         }
 
-        .release {
-            align-items: center;
-            border-top: 1px solid var(--line);
-            display: flex;
-            gap: 18px;
-            justify-content: space-between;
-            margin-top: 58px;
-            padding-top: 24px;
-        }
-
-        .release p {
-            color: var(--muted);
-            margin: 0;
-        }
-
         pre {
             background: #101820;
             border-radius: 8px;
@@ -333,8 +310,7 @@
             }
 
             .actions,
-            .navigation,
-            .release {
+            .navigation {
                 align-items: stretch;
                 flex-direction: column;
             }
@@ -362,15 +338,13 @@
         <header class="hero">
             <p class="eyebrow">Project Page</p>
             <h1>Bootstrapping Video Interaction Generation with Synthetic State Transitions</h1>
-            <!-- TODO: Replace with the final camera-ready author list and affiliation links. -->
-            <p class="authors">Author information will be updated with the camera-ready version.</p>
+            <p class="authors">
+                Jiho Jang<sup>1*</sup>, Jin-Young Kim<sup>*</sup>, Nojun Kwak<sup>1</sup> and Kyungjune Baek<sup>2&dagger;</sup>
+            </p>
             <div class="actions" aria-label="Project links">
-                <a class="button" href="./supp_comp.pdf">Supplementary PDF</a>
-                <a class="button secondary" href="https://github.com/hagiss/synthetic-state-transitions">Code</a>
-                <a class="button secondary" href="#qualitative-comparison">Videos</a>
-                <span class="button disabled" aria-disabled="true">Paper Coming Soon</span>
+                <span class="button disabled" aria-disabled="true">Code</span>
+                <span class="button disabled" aria-disabled="true">Dataset</span>
             </div>
-            <p class="status-note">The code will be released on this page.</p>
         </header>
 
         <section class="abstract" id="abstract">
@@ -439,14 +413,6 @@
   booktitle = {TBD},
   year = {2026}
 }</code></pre>
-        </section>
-
-        <section class="release" id="release">
-            <p>
-                Supplementary material is available now. Code, dataset details, and evaluation tools will be released
-                here.
-            </p>
-            <a class="button secondary" href="./supp_comp.pdf">Open Supplement</a>
         </section>
 
         <footer>
